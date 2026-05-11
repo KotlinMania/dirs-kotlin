@@ -10,8 +10,15 @@ internal actual fun readAll(path: String): ByteArray? {
     }
 }
 
+// `require('fs')` as a literal here would be parsed by webpack's static analyzer and pulled
+// into the browser bundle, where `fs` is unresolvable — `jsBrowserTest` fails with
+// `Module not found: Error: Can't resolve 'fs'`. An `eval('require')` form trips webpack's
+// eval-source-map devtool, which wraps eval() calls and mangles the embedded ternary at bundle
+// time. `(new Function('return require'))()` is opaque to both the static analyzer AND the
+// eval-aware plugins, so the lookup only fires at runtime in environments that actually
+// expose `require` (Node). See workspace CLAUDE.md "Hiding require('fs') from webpack".
 private fun jsRequireFsOrNull(): dynamic = js(
-    "(typeof require === 'function') ? (function(){ try { return require('fs'); } catch (e) { return null; } })() : null"
+    "(function(){ try { var rq = (new Function('return typeof require === \"function\" ? require : null'))(); if (!rq) return null; return rq('fs'); } catch (e) { return null; } })()"
 )
 
 private fun readFileSync(nodeFs: dynamic, path: String): ByteArray? {
