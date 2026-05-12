@@ -329,16 +329,16 @@ dependencies {
     // since the JVM-flavoured kotlinx packages publish multiplatform metadata
     // that requires a target attribute to resolve.
     codeqlSourceClasspath("org.jetbrains.kotlin:kotlin-stdlib:2.3.21")
-    codeqlSourceClasspath("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.10.2")
+    codeqlSourceClasspath("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.11.0")
     codeqlSourceClasspath("org.jetbrains.kotlinx:kotlinx-serialization-core-jvm:1.11.0")
     codeqlSourceClasspath("org.jetbrains.kotlinx:kotlinx-serialization-json-jvm:1.11.0")
-    codeqlSourceClasspath("org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.7.1")
+    codeqlSourceClasspath("org.jetbrains.kotlinx:kotlinx-datetime-jvm:0.8.0")
     codeqlSourceClasspath("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.4.0")
 }
 
 val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
     description =
-        "Compile commonMain Kotlin sources with kotlinc 2.3.20 for CodeQL Java/Kotlin extraction. " +
+        "Compile commonMain Kotlin sources with kotlinc 2.3.21 for CodeQL Java/Kotlin extraction. " +
         "Not part of any published artifact; intended to be wrapped by `codeql database create` " +
         "or `github/codeql-action/init` so the LD_PRELOAD tracer can attach the extractor agent " +
         "to the in-process kotlinc."
@@ -348,18 +348,34 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
     mainClass.set("org.jetbrains.kotlin.cli.jvm.K2JVMCompiler")
 
     val outDir = layout.buildDirectory.dir("classes/kotlin/codeql-jvm")
+    val emptySourceDir = layout.buildDirectory.dir("generated/codeql-empty")
+    val emptySourceFile = emptySourceDir.map { it.file("CodeqlEmptySourceSentinel.kt") }
     val sources = fileTree("src/commonMain/kotlin") { include("**/*.kt") }
     inputs.files(sources).withPathSensitivity(PathSensitivity.RELATIVE)
     inputs.files(codeqlSourceClasspath).withNormalizer(ClasspathNormalizer::class.java)
     outputs.dir(outDir)
-
-    // Skip when commonMain has no Kotlin source. kotlinc 2.3.21 with an
-    // empty source-file list drops into REPL mode and fails with
-    // "Kotlin REPL is deprecated and should be enabled explicitly for now".
-    onlyIf("commonMain has at least one Kotlin source") { sources.files.isNotEmpty() }
+    outputs.file(emptySourceFile)
 
     doFirst {
         outDir.get().asFile.mkdirs()
+        val sourceFiles = sources.files.sortedBy { it.absolutePath }
+        val compileSources =
+            if (sourceFiles.isEmpty()) {
+                val sentinel = emptySourceFile.get().asFile
+                sentinel.parentFile.mkdirs()
+                sentinel.writeText(
+                    """
+                    package io.github.kotlinmania.dirs
+
+                    internal object CodeqlEmptySourceSentinel
+                    """.trimIndent() + "\n",
+                )
+                listOf(sentinel)
+            } else {
+                emptySourceFile.get().asFile.delete()
+                sourceFiles
+            }
+
         args = listOf(
             "-d", outDir.get().asFile.absolutePath,
             "-classpath", codeqlSourceClasspath.asPath,
@@ -371,7 +387,7 @@ val codeqlCompileJvm = tasks.register<JavaExec>("codeqlCompileJvm") {
             "-opt-in", "kotlin.time.ExperimentalTime",
             "-opt-in", "kotlin.concurrent.atomics.ExperimentalAtomicApi",
             "-Xexpect-actual-classes",
-        ) + sources.files.map { it.absolutePath }
+        ) + compileSources.map { it.absolutePath }
     }
 }
 
