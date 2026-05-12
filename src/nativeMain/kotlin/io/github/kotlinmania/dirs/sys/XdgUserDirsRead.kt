@@ -3,6 +3,7 @@ package io.github.kotlinmania.dirs.sys
 
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
+import kotlinx.cinterop.convert
 import kotlinx.cinterop.usePinned
 import platform.posix.feof
 import platform.posix.fclose
@@ -21,7 +22,7 @@ internal actual fun readAll(path: String): ByteArray? {
         var failed = false
         while (!done) {
             val read = chunk.usePinned { pinned ->
-                fread(pinned.addressOf(0), 1.toULong(), chunkSize.toULong(), file)
+                fread(pinned.addressOf(0), 1.convert(), chunkSize.convert(), file)
             }
             val readInt = read.toInt()
             if (readInt > 0) {
