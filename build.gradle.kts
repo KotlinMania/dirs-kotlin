@@ -28,11 +28,24 @@ version = "0.1.0"
 // task graph — before any task executes — so a project-local Android SDK must
 // already be installed by the time configuration runs. setup-android-sdk.sh
 // installs the SDK into this repo's own .android-sdk/ and writes
-// local.properties to point there. It runs unconditionally on every
-// configuration: the script itself is idempotent (an already-installed SDK is
-// a fast no-op), but there is deliberately no Gradle-side condition that could
-// skip the install, and no fallback to a sibling repo's SDK.
-serviceOf<ExecOperations>().exec { commandLine("bash", "./setup-android-sdk.sh") }
+// local.properties to point there. It runs on Unix hosts during configuration:
+// the script itself is idempotent (an already-installed SDK is a fast no-op).
+// Windows CI does not have a Unix shell with an installed WSL distro, so the
+// Windows workflow sets up the Android SDK first and Gradle records that
+// explicit SDK location before the Android Gradle plugin resolves it.
+val isWindowsHost = System.getProperty("os.name").lowercase().contains("windows")
+if (isWindowsHost) {
+    val androidSdkDir =
+        providers.environmentVariable("ANDROID_HOME")
+            .orElse(providers.environmentVariable("ANDROID_SDK_ROOT"))
+            .orNull
+            ?: throw GradleException("ANDROID_HOME or ANDROID_SDK_ROOT must be set on Windows hosts")
+    layout.projectDirectory.file("local.properties").asFile.writeText(
+        "sdk.dir=${androidSdkDir.replace("\\", "/")}\n",
+    )
+} else {
+    serviceOf<ExecOperations>().exec { commandLine("bash", "./setup-android-sdk.sh") }
+}
 
 kotlin {
     applyDefaultHierarchyTemplate()
