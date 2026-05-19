@@ -1,4 +1,4 @@
-// port-lint: source src/lib.rs
+// port-lint: source lib.rs
 package io.github.kotlinmania.dirs
 
 /**
@@ -13,7 +13,7 @@ package io.github.kotlinmania.dirs
  *
  * - the [XDG base directory](https://standards.freedesktop.org/basedir-spec/basedir-spec-latest.html) and the [XDG user directory](https://www.freedesktop.org/wiki/Software/xdg-user-dirs/) specifications on Linux,
  * - the [Known Folder](https://msdn.microsoft.com/en-us/library/windows/desktop/bb776911(v=vs.85).aspx) system on Windows, and
- * - the [Standard Directories](https://developer.apple.com/library/content/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html#//apple_ref/doc/uid/TP40010672-CH2-SW6) on macOS.
+ * - the [Standard Directories](https://developer.apple.com/library/archive/documentation/FileManagement/Conceptual/FileSystemProgrammingGuide/FileSystemOverview/FileSystemOverview.html) on macOS.
  *
  * Upstream Rust returns `Option<PathBuf>`. The Kotlin port returns a nullable [String]
  * (filesystem path) because Kotlin Multiplatform has no portable `PathBuf` type.
@@ -29,13 +29,13 @@ package io.github.kotlinmania.dirs
  * | ------- | -------------------- | -------------- |
  * | Linux   | `$HOME`              | /home/alice    |
  * | macOS   | `$HOME`              | /Users/Alice   |
- * | Windows | `{FOLDERID_Profile}` | C:\Users\Alice |
+ * | Windows | profile known folder | C:\Users\Alice |
  *
  * ### Linux and macOS:
  *
  * - Use `$HOME` if it is set and not empty.
  * - If `$HOME` is not set or empty, then the platform fallback for determining the home
- *   directory of the current user is consulted (POSIX `getpwuid_r` upstream; Kotlin Multiplatform
+ *   directory of the current user is consulted (the POSIX account database upstream; Kotlin Multiplatform
  *   does not portably expose it, so the fallback returns `null`).
  *
  * ### Windows:
@@ -58,7 +58,7 @@ public fun homeDir(): String? = sysHomeDir()
  * | ------- | ----------------------------------- | ---------------------------- |
  * | Linux   | `$XDG_CACHE_HOME` or `$HOME`/.cache | /home/alice/.cache           |
  * | macOS   | `$HOME`/Library/Caches              | /Users/Alice/Library/Caches  |
- * | Windows | `{FOLDERID_LocalAppData}`           | C:\Users\Alice\AppData\Local |
+ * | Windows | local application data folder       | C:\Users\Alice\AppData\Local |
  */
 public fun cacheDir(): String? = sysCacheDir()
 
@@ -69,7 +69,7 @@ public fun cacheDir(): String? = sysCacheDir()
  * | ------- | ------------------------------------- | ---------------------------------------- |
  * | Linux   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config                      |
  * | macOS   | `$HOME`/Library/Application Support   | /Users/Alice/Library/Application Support |
- * | Windows | `{FOLDERID_RoamingAppData}`           | C:\Users\Alice\AppData\Roaming           |
+ * | Windows | roaming application data folder       | C:\Users\Alice\AppData\Roaming           |
  */
 public fun configDir(): String? = sysConfigDir()
 
@@ -80,7 +80,7 @@ public fun configDir(): String? = sysConfigDir()
  * | ------- | ------------------------------------- | ---------------------------------------- |
  * | Linux   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config                      |
  * | macOS   | `$HOME`/Library/Application Support   | /Users/Alice/Library/Application Support |
- * | Windows | `{FOLDERID_LocalAppData}`             | C:\Users\Alice\AppData\Local             |
+ * | Windows | local application data folder         | C:\Users\Alice\AppData\Local             |
  */
 public fun configLocalDir(): String? = sysConfigLocalDir()
 
@@ -91,7 +91,7 @@ public fun configLocalDir(): String? = sysConfigLocalDir()
  * | ------- | ---------------------------------------- | ---------------------------------------- |
  * | Linux   | `$XDG_DATA_HOME` or `$HOME`/.local/share | /home/alice/.local/share                 |
  * | macOS   | `$HOME`/Library/Application Support      | /Users/Alice/Library/Application Support |
- * | Windows | `{FOLDERID_RoamingAppData}`              | C:\Users\Alice\AppData\Roaming           |
+ * | Windows | roaming application data folder          | C:\Users\Alice\AppData\Roaming           |
  */
 public fun dataDir(): String? = sysDataDir()
 
@@ -102,7 +102,7 @@ public fun dataDir(): String? = sysDataDir()
  * | ------- | ---------------------------------------- | ---------------------------------------- |
  * | Linux   | `$XDG_DATA_HOME` or `$HOME`/.local/share | /home/alice/.local/share                 |
  * | macOS   | `$HOME`/Library/Application Support      | /Users/Alice/Library/Application Support |
- * | Windows | `{FOLDERID_LocalAppData}`                | C:\Users\Alice\AppData\Local             |
+ * | Windows | local application data folder            | C:\Users\Alice\AppData\Local             |
  */
 public fun dataLocalDir(): String? = sysDataLocalDir()
 
@@ -124,7 +124,7 @@ public fun executableDir(): String? = sysExecutableDir()
  * | ------- | ------------------------------------- | -------------------------------- |
  * | Linux   | `$XDG_CONFIG_HOME` or `$HOME`/.config | /home/alice/.config              |
  * | macOS   | `$HOME`/Library/Preferences           | /Users/Alice/Library/Preferences |
- * | Windows | `{FOLDERID_RoamingAppData}`           | C:\Users\Alice\AppData\Roaming   |
+ * | Windows | roaming application data folder       | C:\Users\Alice\AppData\Roaming   |
  */
 public fun preferenceDir(): String? = sysPreferenceDir()
 
@@ -164,7 +164,7 @@ public fun stateDir(): String? = sysStateDir()
  * | ------- | ------------------ | -------------------- |
  * | Linux   | `XDG_MUSIC_DIR`    | /home/alice/Music    |
  * | macOS   | `$HOME`/Music      | /Users/Alice/Music   |
- * | Windows | `{FOLDERID_Music}` | C:\Users\Alice\Music |
+ * | Windows | music known folder | C:\Users\Alice\Music |
  */
 public fun audioDir(): String? = sysAudioDir()
 
@@ -175,7 +175,7 @@ public fun audioDir(): String? = sysAudioDir()
  * | ------- | -------------------- | ---------------------- |
  * | Linux   | `XDG_DESKTOP_DIR`    | /home/alice/Desktop    |
  * | macOS   | `$HOME`/Desktop      | /Users/Alice/Desktop   |
- * | Windows | `{FOLDERID_Desktop}` | C:\Users\Alice\Desktop |
+ * | Windows | desktop known folder | C:\Users\Alice\Desktop |
  */
 public fun desktopDir(): String? = sysDesktopDir()
 
@@ -186,7 +186,7 @@ public fun desktopDir(): String? = sysDesktopDir()
  * | ------- | ---------------------- | ------------------------ |
  * | Linux   | `XDG_DOCUMENTS_DIR`    | /home/alice/Documents    |
  * | macOS   | `$HOME`/Documents      | /Users/Alice/Documents   |
- * | Windows | `{FOLDERID_Documents}` | C:\Users\Alice\Documents |
+ * | Windows | documents known folder | C:\Users\Alice\Documents |
  */
 public fun documentDir(): String? = sysDocumentDir()
 
@@ -197,7 +197,7 @@ public fun documentDir(): String? = sysDocumentDir()
  * | ------- | ---------------------- | ------------------------ |
  * | Linux   | `XDG_DOWNLOAD_DIR`     | /home/alice/Downloads    |
  * | macOS   | `$HOME`/Downloads      | /Users/Alice/Downloads   |
- * | Windows | `{FOLDERID_Downloads}` | C:\Users\Alice\Downloads |
+ * | Windows | downloads known folder | C:\Users\Alice\Downloads |
  */
 public fun downloadDir(): String? = sysDownloadDir()
 
@@ -219,7 +219,7 @@ public fun fontDir(): String? = sysFontDir()
  * | ------- | --------------------- | ----------------------- |
  * | Linux   | `XDG_PICTURES_DIR`    | /home/alice/Pictures    |
  * | macOS   | `$HOME`/Pictures      | /Users/Alice/Pictures   |
- * | Windows | `{FOLDERID_Pictures}` | C:\Users\Alice\Pictures |
+ * | Windows | pictures known folder | C:\Users\Alice\Pictures |
  */
 public fun pictureDir(): String? = sysPictureDir()
 
@@ -230,7 +230,7 @@ public fun pictureDir(): String? = sysPictureDir()
  * | ------- | --------------------- | ------------------- |
  * | Linux   | `XDG_PUBLICSHARE_DIR` | /home/alice/Public  |
  * | macOS   | `$HOME`/Public        | /Users/Alice/Public |
- * | Windows | `{FOLDERID_Public}`   | C:\Users\Public     |
+ * | Windows | public known folder   | C:\Users\Public     |
  */
 public fun publicDir(): String? = sysPublicDir()
 
@@ -241,7 +241,7 @@ public fun publicDir(): String? = sysPublicDir()
  * | ------- | ---------------------- | ---------------------------------------------------------- |
  * | Linux   | `XDG_TEMPLATES_DIR`    | /home/alice/Templates                                      |
  * | macOS   | –                      | –                                                          |
- * | Windows | `{FOLDERID_Templates}` | C:\Users\Alice\AppData\Roaming\Microsoft\Windows\Templates |
+ * | Windows | templates known folder | C:\Users\Alice\AppData\Roaming\Microsoft\Windows\Templates |
  */
 public fun templateDir(): String? = sysTemplateDir()
 
@@ -252,7 +252,7 @@ public fun templateDir(): String? = sysTemplateDir()
  * | ------- | ------------------- | --------------------- |
  * | Linux   | `XDG_VIDEOS_DIR`    | /home/alice/Videos    |
  * | macOS   | `$HOME`/Movies      | /Users/Alice/Movies   |
- * | Windows | `{FOLDERID_Videos}` | C:\Users\Alice\Videos |
+ * | Windows | videos known folder | C:\Users\Alice\Videos |
  */
 public fun videoDir(): String? = sysVideoDir()
 
