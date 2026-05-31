@@ -1,6 +1,5 @@
 {
   "type": "port",
-  "parity_mode": false,
   "name": "dirs-kotlin",
   "source": {
     "path": "tmp/dirs/src",
