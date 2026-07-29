@@ -17,9 +17,10 @@ internal actual fun readAll(path: String): ByteArray? {
 // time. `(new Function('return require'))()` is opaque to both the static analyzer AND the
 // eval-aware plugins, so the lookup only fires at runtime in environments that actually
 // expose `require` (Node). See workspace CLAUDE.md "Hiding require('fs') from webpack".
-private fun jsRequireFsOrNull(): dynamic = js(
-    "(function(){ try { var rq = (new Function('return typeof require === \"function\" ? require : null'))(); if (!rq) return null; return rq('fs'); } catch (e) { return null; } })()"
-)
+private fun jsRequireFsOrNull(): dynamic =
+    js(
+        "(function(){ try { var rq = (new Function('return typeof require === \"function\" ? require : null'))(); if (!rq) return null; return rq('fs'); } catch (e) { return null; } })()",
+    )
 
 private fun readFileSync(nodeFs: dynamic, path: String): ByteArray? {
     val buffer: dynamic = nodeFs.readFileSync(path)

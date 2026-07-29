@@ -33,13 +33,21 @@ internal actual fun sysExecutableDir(): String? =
     xdgAbsoluteOrHome("XDG_BIN_HOME", ".local/bin")
 
 internal actual fun sysAudioDir(): String? = userDir("MUSIC")
+
 internal actual fun sysDesktopDir(): String? = userDir("DESKTOP")
+
 internal actual fun sysDocumentDir(): String? = userDir("DOCUMENTS")
+
 internal actual fun sysDownloadDir(): String? = userDir("DOWNLOAD")
+
 internal actual fun sysFontDir(): String? = sysDataDir()?.let { joinPath(it, "fonts") }
+
 internal actual fun sysPictureDir(): String? = userDir("PICTURES")
+
 internal actual fun sysPublicDir(): String? = userDir("PUBLICSHARE")
+
 internal actual fun sysTemplateDir(): String? = userDir("TEMPLATES")
+
 internal actual fun sysVideoDir(): String? = userDir("VIDEOS")
 
 @OptIn(ExperimentalForeignApi::class)
