@@ -3,123 +3,142 @@ package io.github.kotlinmania.dirs
 
 import io.github.kotlinmania.dirs.sys.single
 
-internal actual fun sysHomeDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> winEnv("USERPROFILE")
-    HostFamily.Mac,
-    HostFamily.Unix,
-    -> posixHome()
-}
+internal actual fun sysHomeDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> winEnv("USERPROFILE")
+        HostFamily.Mac,
+        HostFamily.Unix,
+        -> posixHome()
+    }
 
-internal actual fun sysCacheDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysDataLocalDir()
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Library/Caches") }
-    HostFamily.Unix -> xdgAbsoluteOrHome("XDG_CACHE_HOME", ".cache")
-}
+internal actual fun sysCacheDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysDataLocalDir()
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Library/Caches") }
+        HostFamily.Unix -> xdgAbsoluteOrHome("XDG_CACHE_HOME", ".cache")
+    }
 
-internal actual fun sysConfigDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> winEnv("APPDATA")
-    HostFamily.Mac -> appSupportDir()
-    HostFamily.Unix -> xdgAbsoluteOrHome("XDG_CONFIG_HOME", ".config")
-}
+internal actual fun sysConfigDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> winEnv("APPDATA")
+        HostFamily.Mac -> appSupportDir()
+        HostFamily.Unix -> xdgAbsoluteOrHome("XDG_CONFIG_HOME", ".config")
+    }
 
-internal actual fun sysConfigLocalDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> winEnv("LOCALAPPDATA")
-    HostFamily.Mac -> appSupportDir()
-    HostFamily.Unix -> sysConfigDir()
-}
+internal actual fun sysConfigLocalDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> winEnv("LOCALAPPDATA")
+        HostFamily.Mac -> appSupportDir()
+        HostFamily.Unix -> sysConfigDir()
+    }
 
-internal actual fun sysDataDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> winEnv("APPDATA")
-    HostFamily.Mac -> appSupportDir()
-    HostFamily.Unix -> xdgAbsoluteOrHome("XDG_DATA_HOME", ".local/share")
-}
+internal actual fun sysDataDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> winEnv("APPDATA")
+        HostFamily.Mac -> appSupportDir()
+        HostFamily.Unix -> xdgAbsoluteOrHome("XDG_DATA_HOME", ".local/share")
+    }
 
-internal actual fun sysDataLocalDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> winEnv("LOCALAPPDATA")
-    HostFamily.Mac -> appSupportDir()
-    HostFamily.Unix -> sysDataDir()
-}
+internal actual fun sysDataLocalDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> winEnv("LOCALAPPDATA")
+        HostFamily.Mac -> appSupportDir()
+        HostFamily.Unix -> sysDataDir()
+    }
 
-internal actual fun sysExecutableDir(): String? = when (hostFamily()) {
-    HostFamily.Windows,
-    HostFamily.Mac,
-    -> null
-    HostFamily.Unix -> xdgAbsoluteOrHome("XDG_BIN_HOME", ".local/bin")
-}
+internal actual fun sysExecutableDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows,
+        HostFamily.Mac,
+        -> null
+        HostFamily.Unix -> xdgAbsoluteOrHome("XDG_BIN_HOME", ".local/bin")
+    }
 
-internal actual fun sysPreferenceDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> winEnv("LOCALAPPDATA")
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Library/Preferences") }
-    HostFamily.Unix -> sysConfigDir()
-}
+internal actual fun sysPreferenceDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> winEnv("LOCALAPPDATA")
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Library/Preferences") }
+        HostFamily.Unix -> sysConfigDir()
+    }
 
-internal actual fun sysRuntimeDir(): String? = when (hostFamily()) {
-    HostFamily.Windows,
-    HostFamily.Mac,
-    -> null
-    HostFamily.Unix -> envAbsolutePath("XDG_RUNTIME_DIR")
-}
+internal actual fun sysRuntimeDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows,
+        HostFamily.Mac,
+        -> null
+        HostFamily.Unix -> envAbsolutePath("XDG_RUNTIME_DIR")
+    }
 
-internal actual fun sysStateDir(): String? = when (hostFamily()) {
-    HostFamily.Windows,
-    HostFamily.Mac,
-    -> null
-    HostFamily.Unix -> xdgAbsoluteOrHome("XDG_STATE_HOME", ".local/state")
-}
+internal actual fun sysStateDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows,
+        HostFamily.Mac,
+        -> null
+        HostFamily.Unix -> xdgAbsoluteOrHome("XDG_STATE_HOME", ".local/state")
+    }
 
-internal actual fun sysAudioDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Music") }
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Music") }
-    HostFamily.Unix -> userDir("MUSIC")
-}
+internal actual fun sysAudioDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Music") }
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Music") }
+        HostFamily.Unix -> userDir("MUSIC")
+    }
 
-internal actual fun sysDesktopDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Desktop") }
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Desktop") }
-    HostFamily.Unix -> userDir("DESKTOP")
-}
+internal actual fun sysDesktopDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Desktop") }
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Desktop") }
+        HostFamily.Unix -> userDir("DESKTOP")
+    }
 
-internal actual fun sysDocumentDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Documents") }
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Documents") }
-    HostFamily.Unix -> userDir("DOCUMENTS")
-}
+internal actual fun sysDocumentDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Documents") }
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Documents") }
+        HostFamily.Unix -> userDir("DOCUMENTS")
+    }
 
-internal actual fun sysDownloadDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Downloads") }
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Downloads") }
-    HostFamily.Unix -> userDir("DOWNLOAD")
-}
+internal actual fun sysDownloadDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Downloads") }
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Downloads") }
+        HostFamily.Unix -> userDir("DOWNLOAD")
+    }
 
-internal actual fun sysFontDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> null
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Library/Fonts") }
-    HostFamily.Unix -> sysDataDir()?.let { joinPosixPath(it, "fonts") }
-}
+internal actual fun sysFontDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> null
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Library/Fonts") }
+        HostFamily.Unix -> sysDataDir()?.let { joinPosixPath(it, "fonts") }
+    }
 
-internal actual fun sysPictureDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Pictures") }
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Pictures") }
-    HostFamily.Unix -> userDir("PICTURES")
-}
+internal actual fun sysPictureDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Pictures") }
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Pictures") }
+        HostFamily.Unix -> userDir("PICTURES")
+    }
 
-internal actual fun sysPublicDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Public") }
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Public") }
-    HostFamily.Unix -> userDir("PUBLICSHARE")
-}
+internal actual fun sysPublicDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Public") }
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Public") }
+        HostFamily.Unix -> userDir("PUBLICSHARE")
+    }
 
-internal actual fun sysTemplateDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysConfigDir()?.let { joinWindowsPath(it, "Microsoft\\Windows\\Templates") }
-    HostFamily.Mac -> null
-    HostFamily.Unix -> userDir("TEMPLATES")
-}
+internal actual fun sysTemplateDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysConfigDir()?.let { joinWindowsPath(it, "Microsoft\\Windows\\Templates") }
+        HostFamily.Mac -> null
+        HostFamily.Unix -> userDir("TEMPLATES")
+    }
 
-internal actual fun sysVideoDir(): String? = when (hostFamily()) {
-    HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Videos") }
-    HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Movies") }
-    HostFamily.Unix -> userDir("VIDEOS")
-}
+internal actual fun sysVideoDir(): String? =
+    when (hostFamily()) {
+        HostFamily.Windows -> sysHomeDir()?.let { joinWindowsPath(it, "Videos") }
+        HostFamily.Mac -> posixHome()?.let { joinPosixPath(it, "Movies") }
+        HostFamily.Unix -> userDir("VIDEOS")
+    }
 
 private enum class HostFamily {
     Windows,
@@ -163,11 +182,12 @@ private fun userDirFileDirectory(home: String): String =
 private fun winEnv(name: String): String? = env(name)
 
 private fun env(name: String): String? {
-    val raw = try {
-        System.getenv(name)
-    } catch (_: SecurityException) {
-        null
-    }
+    val raw =
+        try {
+            System.getenv(name)
+        } catch (_: SecurityException) {
+            null
+        }
     return raw?.takeIf { it.isNotEmpty() }
 }
 

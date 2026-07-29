@@ -43,56 +43,60 @@ internal fun parseUserDirs(
         var value = kv.second
 
         key = trimBlank(key)
-        val keyStr: String = if (
-            startsWith(key, BYTES_XDG) && endsWith(key, BYTES_DIR_SUFFIX)
-        ) {
-            val sliced = key.copyOfRange(4, key.size - 4)
-            val decoded = decodeUtf8(sliced) ?: continue
-            when {
-                userDir != null && userDir == decoded -> {
-                    singleDirFound = true
-                    decoded
+        val keyStr: String =
+            if (
+                startsWith(key, BYTES_XDG) && endsWith(key, BYTES_DIR_SUFFIX)
+            ) {
+                val sliced = key.copyOfRange(4, key.size - 4)
+                val decoded = decodeUtf8(sliced) ?: continue
+                when {
+                    userDir != null && userDir == decoded -> {
+                        singleDirFound = true
+                        decoded
+                    }
+                    userDir == null -> decoded
+                    else -> continue
                 }
-                userDir == null -> decoded
-                else -> continue
+            } else {
+                continue
             }
-        } else {
-            continue
-        }
 
         // xdg-user-dirs-update uses double quotes and we don't support anything else.
         value = trimBlank(value)
-        var unquoted = if (
-            startsWith(value, BYTES_QUOTE) && endsWith(value, BYTES_QUOTE) && value.size >= 2
-        ) {
-            value.copyOfRange(1, value.size - 1)
-        } else {
-            continue
-        }
-
-        // Path should be either relative to the home directory or absolute.
-        val isRelative: Boolean = when {
-            byteArraysEqual(unquoted, BYTES_HOME_SLASH) -> {
-                // "Note: To disable a directory, point it to the homedir."
-                // Source: https://www.freedesktop.org/wiki/Software/xdg-user-dirs/
-                // Additionally directory is reassigned to homedir when removed.
+        var unquoted =
+            if (
+                startsWith(value, BYTES_QUOTE) && endsWith(value, BYTES_QUOTE) && value.size >= 2
+            ) {
+                value.copyOfRange(1, value.size - 1)
+            } else {
                 continue
             }
-            startsWith(unquoted, BYTES_HOME_SLASH) -> {
-                unquoted = unquoted.copyOfRange(BYTES_HOME_SLASH.size, unquoted.size)
-                true
+
+        // Path should be either relative to the home directory or absolute.
+        val isRelative: Boolean =
+            when {
+                byteArraysEqual(unquoted, BYTES_HOME_SLASH) -> {
+                    // "Note: To disable a directory, point it to the homedir."
+                    // Source: https://www.freedesktop.org/wiki/Software/xdg-user-dirs/
+                    // Additionally directory is reassigned to homedir when removed.
+                    continue
+                }
+                startsWith(unquoted, BYTES_HOME_SLASH) -> {
+                    unquoted = unquoted.copyOfRange(BYTES_HOME_SLASH.size, unquoted.size)
+                    true
+                }
+                startsWith(unquoted, BYTES_SLASH) -> false
+                else -> continue
             }
-            startsWith(unquoted, BYTES_SLASH) -> false
-            else -> continue
-        }
 
         val rawPath = bytesToOsString(shellUnescape(unquoted))
 
-        val path: String = if (isRelative) {
-            joinPath(homeDir, rawPath)
-        } else {
-            rawPath
-        }
+        val path: String =
+            if (isRelative) {
+                joinPath(homeDir, rawPath)
+            } else {
+                rawPath
+            }
 
         userDirs[keyStr] = path
         if (singleDirFound) {
@@ -166,10 +170,15 @@ internal expect fun readAll(path: String): ByteArray?
 private val BYTES_XDG = byteArrayOf('X'.code.toByte(), 'D'.code.toByte(), 'G'.code.toByte(), '_'.code.toByte())
 private val BYTES_DIR_SUFFIX = byteArrayOf('_'.code.toByte(), 'D'.code.toByte(), 'I'.code.toByte(), 'R'.code.toByte())
 private val BYTES_QUOTE = byteArrayOf('"'.code.toByte())
-private val BYTES_HOME_SLASH = byteArrayOf(
-    '$'.code.toByte(), 'H'.code.toByte(), 'O'.code.toByte(), 'M'.code.toByte(),
-    'E'.code.toByte(), '/'.code.toByte(),
-)
+private val BYTES_HOME_SLASH =
+    byteArrayOf(
+        '$'.code.toByte(),
+        'H'.code.toByte(),
+        'O'.code.toByte(),
+        'M'.code.toByte(),
+        'E'.code.toByte(),
+        '/'.code.toByte(),
+    )
 private val BYTES_SLASH = byteArrayOf('/'.code.toByte())
 private const val BYTE_SPACE: Byte = 0x20
 private const val BYTE_TAB: Byte = 0x09
@@ -208,13 +217,14 @@ private fun isValidUtf8(bytes: ByteArray): Boolean {
     var i = 0
     while (i < bytes.size) {
         val b = bytes[i].toInt() and 0xFF
-        val width: Int = when {
-            b < 0x80 -> 1
-            b in 0xC2..0xDF -> 2
-            b in 0xE0..0xEF -> 3
-            b in 0xF0..0xF4 -> 4
-            else -> return false
-        }
+        val width: Int =
+            when {
+                b < 0x80 -> 1
+                b in 0xC2..0xDF -> 2
+                b in 0xE0..0xEF -> 3
+                b in 0xF0..0xF4 -> 4
+                else -> return false
+            }
         if (i + width > bytes.size) return false
         var j = 1
         while (j < width) {
