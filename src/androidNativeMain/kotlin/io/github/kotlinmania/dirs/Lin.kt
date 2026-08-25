@@ -1,4 +1,3 @@
-// port-lint: source src/lin.rs
 package io.github.kotlinmania.dirs
 
 import io.github.kotlinmania.dirs.sys.single

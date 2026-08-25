@@ -1,4 +1,3 @@
-// port-lint: source src/wasm.rs
 package io.github.kotlinmania.dirs
 
 // Stub definitions to make things *compile*.
