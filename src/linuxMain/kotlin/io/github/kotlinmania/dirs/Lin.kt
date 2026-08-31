@@ -1,4 +1,4 @@
-// port-lint: source src/lin.rs
+// port-lint: source lin.rs
 package io.github.kotlinmania.dirs
 
 import io.github.kotlinmania.dirs.sys.single
@@ -6,49 +6,65 @@ import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.toKString
 import platform.posix.getenv
 
-internal actual fun sysHomeDir(): String? = posixHome()
+internal actual fun sysHomeDir(): String? = Lin.homeDir()
+internal actual fun sysCacheDir(): String? = Lin.cacheDir()
+internal actual fun sysConfigDir(): String? = Lin.configDir()
+internal actual fun sysConfigLocalDir(): String? = Lin.configLocalDir()
+internal actual fun sysDataDir(): String? = Lin.dataDir()
+internal actual fun sysDataLocalDir(): String? = Lin.dataLocalDir()
+internal actual fun sysPreferenceDir(): String? = Lin.preferenceDir()
+internal actual fun sysRuntimeDir(): String? = Lin.runtimeDir()
+internal actual fun sysStateDir(): String? = Lin.stateDir()
+internal actual fun sysExecutableDir(): String? = Lin.executableDir()
 
-internal actual fun sysCacheDir(): String? =
-    xdgAbsoluteOrHome("XDG_CACHE_HOME", ".cache")
+internal actual fun sysAudioDir(): String? = Lin.audioDir()
+internal actual fun sysDesktopDir(): String? = Lin.desktopDir()
+internal actual fun sysDocumentDir(): String? = Lin.documentDir()
+internal actual fun sysDownloadDir(): String? = Lin.downloadDir()
+internal actual fun sysFontDir(): String? = Lin.fontDir()
+internal actual fun sysPictureDir(): String? = Lin.pictureDir()
+internal actual fun sysPublicDir(): String? = Lin.publicDir()
+internal actual fun sysTemplateDir(): String? = Lin.templateDir()
+internal actual fun sysVideoDir(): String? = Lin.videoDir()
 
-internal actual fun sysConfigDir(): String? =
-    xdgAbsoluteOrHome("XDG_CONFIG_HOME", ".config")
+internal object Lin {
+    fun homeDir(): String? = posixHome()
 
-internal actual fun sysConfigLocalDir(): String? = sysConfigDir()
+    fun cacheDir(): String? =
+        xdgAbsoluteOrHome("XDG_CACHE_HOME", ".cache")
 
-internal actual fun sysDataDir(): String? =
-    xdgAbsoluteOrHome("XDG_DATA_HOME", ".local/share")
+    fun configDir(): String? =
+        xdgAbsoluteOrHome("XDG_CONFIG_HOME", ".config")
 
-internal actual fun sysDataLocalDir(): String? = sysDataDir()
+    fun configLocalDir(): String? = configDir()
 
-internal actual fun sysPreferenceDir(): String? = sysConfigDir()
+    fun dataDir(): String? =
+        xdgAbsoluteOrHome("XDG_DATA_HOME", ".local/share")
 
-internal actual fun sysRuntimeDir(): String? =
-    envAbsolutePath("XDG_RUNTIME_DIR")
+    fun dataLocalDir(): String? = dataDir()
 
-internal actual fun sysStateDir(): String? =
-    xdgAbsoluteOrHome("XDG_STATE_HOME", ".local/state")
+    fun preferenceDir(): String? = configDir()
 
-internal actual fun sysExecutableDir(): String? =
-    xdgAbsoluteOrHome("XDG_BIN_HOME", ".local/bin")
+    fun runtimeDir(): String? =
+        envAbsolutePath("XDG_RUNTIME_DIR")
 
-internal actual fun sysAudioDir(): String? = userDir("MUSIC")
+    fun stateDir(): String? =
+        xdgAbsoluteOrHome("XDG_STATE_HOME", ".local/state")
 
-internal actual fun sysDesktopDir(): String? = userDir("DESKTOP")
+    fun executableDir(): String? =
+        xdgAbsoluteOrHome("XDG_BIN_HOME", ".local/bin")
 
-internal actual fun sysDocumentDir(): String? = userDir("DOCUMENTS")
+    fun audioDir(): String? = userDir("MUSIC")
+    fun desktopDir(): String? = userDir("DESKTOP")
+    fun documentDir(): String? = userDir("DOCUMENTS")
+    fun downloadDir(): String? = userDir("DOWNLOAD")
+    fun fontDir(): String? = dataDir()?.let { joinPath(it, "fonts") }
+    fun pictureDir(): String? = userDir("PICTURES")
+    fun publicDir(): String? = userDir("PUBLICSHARE")
+    fun templateDir(): String? = userDir("TEMPLATES")
+    fun videoDir(): String? = userDir("VIDEOS")
+}
 
-internal actual fun sysDownloadDir(): String? = userDir("DOWNLOAD")
-
-internal actual fun sysFontDir(): String? = sysDataDir()?.let { joinPath(it, "fonts") }
-
-internal actual fun sysPictureDir(): String? = userDir("PICTURES")
-
-internal actual fun sysPublicDir(): String? = userDir("PUBLICSHARE")
-
-internal actual fun sysTemplateDir(): String? = userDir("TEMPLATES")
-
-internal actual fun sysVideoDir(): String? = userDir("VIDEOS")
 
 @OptIn(ExperimentalForeignApi::class)
 private fun posixHome(): String? {
@@ -81,3 +97,4 @@ private fun isAbsolutePath(path: String): Boolean =
 
 private fun joinPath(base: String, child: String): String =
     if (base.endsWith('/')) base + child else "$base/$child"
+
