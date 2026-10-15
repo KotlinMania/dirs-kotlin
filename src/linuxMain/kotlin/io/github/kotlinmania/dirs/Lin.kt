@@ -7,24 +7,41 @@ import kotlinx.cinterop.toKString
 import platform.posix.getenv
 
 internal actual fun sysHomeDir(): String? = Lin.homeDir()
+
 internal actual fun sysCacheDir(): String? = Lin.cacheDir()
+
 internal actual fun sysConfigDir(): String? = Lin.configDir()
+
 internal actual fun sysConfigLocalDir(): String? = Lin.configLocalDir()
+
 internal actual fun sysDataDir(): String? = Lin.dataDir()
+
 internal actual fun sysDataLocalDir(): String? = Lin.dataLocalDir()
+
 internal actual fun sysPreferenceDir(): String? = Lin.preferenceDir()
+
 internal actual fun sysRuntimeDir(): String? = Lin.runtimeDir()
+
 internal actual fun sysStateDir(): String? = Lin.stateDir()
+
 internal actual fun sysExecutableDir(): String? = Lin.executableDir()
 
 internal actual fun sysAudioDir(): String? = Lin.audioDir()
+
 internal actual fun sysDesktopDir(): String? = Lin.desktopDir()
+
 internal actual fun sysDocumentDir(): String? = Lin.documentDir()
+
 internal actual fun sysDownloadDir(): String? = Lin.downloadDir()
+
 internal actual fun sysFontDir(): String? = Lin.fontDir()
+
 internal actual fun sysPictureDir(): String? = Lin.pictureDir()
+
 internal actual fun sysPublicDir(): String? = Lin.publicDir()
+
 internal actual fun sysTemplateDir(): String? = Lin.templateDir()
+
 internal actual fun sysVideoDir(): String? = Lin.videoDir()
 
 internal object Lin {
@@ -55,16 +72,23 @@ internal object Lin {
         xdgAbsoluteOrHome("XDG_BIN_HOME", ".local/bin")
 
     fun audioDir(): String? = userDir("MUSIC")
+
     fun desktopDir(): String? = userDir("DESKTOP")
+
     fun documentDir(): String? = userDir("DOCUMENTS")
+
     fun downloadDir(): String? = userDir("DOWNLOAD")
+
     fun fontDir(): String? = dataDir()?.let { joinPath(it, "fonts") }
+
     fun pictureDir(): String? = userDir("PICTURES")
+
     fun publicDir(): String? = userDir("PUBLICSHARE")
+
     fun templateDir(): String? = userDir("TEMPLATES")
+
     fun videoDir(): String? = userDir("VIDEOS")
 }
-
 
 @OptIn(ExperimentalForeignApi::class)
 private fun posixHome(): String? {
@@ -97,4 +121,3 @@ private fun isAbsolutePath(path: String): Boolean =
 
 private fun joinPath(base: String, child: String): String =
     if (base.endsWith('/')) base + child else "$base/$child"
-

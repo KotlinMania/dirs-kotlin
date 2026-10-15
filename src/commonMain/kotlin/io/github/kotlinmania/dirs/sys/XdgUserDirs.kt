@@ -54,8 +54,14 @@ internal fun parseUserDirs(
                         singleDirFound = true
                         decoded
                     }
-                    userDir == null -> decoded
-                    else -> continue
+
+                    userDir == null -> {
+                        decoded
+                    }
+
+                    else -> {
+                        continue
+                    }
                 }
             } else {
                 continue
@@ -81,12 +87,19 @@ internal fun parseUserDirs(
                     // Additionally directory is reassigned to homedir when removed.
                     continue
                 }
+
                 startsWith(unquoted, BYTES_HOME_SLASH) -> {
                     unquoted = unquoted.copyOfRange(BYTES_HOME_SLASH.size, unquoted.size)
                     true
                 }
-                startsWith(unquoted, BYTES_SLASH) -> false
-                else -> continue
+
+                startsWith(unquoted, BYTES_SLASH) -> {
+                    false
+                }
+
+                else -> {
+                    continue
+                }
             }
 
         val rawPath = bytesToOsString(shellUnescape(unquoted))
