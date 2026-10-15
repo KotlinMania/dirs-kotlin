@@ -1,4 +1,4 @@
-// port-lint: ignore - native filesystem actual for the readAll declared in XdgUserDirs.kt
+// Native filesystem actual for the readAll declared in XdgUserDirs.kt
 package io.github.kotlinmania.dirs.sys
 
 import kotlinx.cinterop.ExperimentalForeignApi

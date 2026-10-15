@@ -1,4 +1,4 @@
-// port-lint: ignore - Android actual for the readAll declared in XdgUserDirs.kt; the workspace
+// Android actual for the readAll declared in XdgUserDirs.kt; the workspace
 // forbids java.* imports, so this corresponds to upstream's "io::Error -> None" branch.
 package io.github.kotlinmania.dirs.sys
 

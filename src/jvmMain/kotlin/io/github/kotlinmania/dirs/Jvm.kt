@@ -1,4 +1,4 @@
-// port-lint: ignore - JVM dispatches to the upstream platform rules in lin.rs, mac.rs, and win.rs.
+// JVM dispatches to the upstream platform rules in lin.rs, mac.rs, and win.rs.
 package io.github.kotlinmania.dirs
 
 import io.github.kotlinmania.dirs.sys.single

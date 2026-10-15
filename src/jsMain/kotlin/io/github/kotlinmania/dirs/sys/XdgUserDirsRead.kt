@@ -1,4 +1,4 @@
-// port-lint: ignore - JS actual for the readAll declared in XdgUserDirs.kt; uses Node fs when available.
+// JS actual for the readAll declared in XdgUserDirs.kt; uses Node fs when available.
 package io.github.kotlinmania.dirs.sys
 
 internal actual fun readAll(path: String): ByteArray? {
