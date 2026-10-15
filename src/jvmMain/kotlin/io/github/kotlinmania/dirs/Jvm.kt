@@ -6,6 +6,7 @@ import io.github.kotlinmania.dirs.sys.single
 internal actual fun sysHomeDir(): String? =
     when (hostFamily()) {
         HostFamily.Windows -> winEnv("USERPROFILE")
+
         HostFamily.Mac,
         HostFamily.Unix,
         -> posixHome()
@@ -51,6 +52,7 @@ internal actual fun sysExecutableDir(): String? =
         HostFamily.Windows,
         HostFamily.Mac,
         -> null
+
         HostFamily.Unix -> xdgAbsoluteOrHome("XDG_BIN_HOME", ".local/bin")
     }
 
@@ -66,6 +68,7 @@ internal actual fun sysRuntimeDir(): String? =
         HostFamily.Windows,
         HostFamily.Mac,
         -> null
+
         HostFamily.Unix -> envAbsolutePath("XDG_RUNTIME_DIR")
     }
 
@@ -74,6 +77,7 @@ internal actual fun sysStateDir(): String? =
         HostFamily.Windows,
         HostFamily.Mac,
         -> null
+
         HostFamily.Unix -> xdgAbsoluteOrHome("XDG_STATE_HOME", ".local/state")
     }
 
